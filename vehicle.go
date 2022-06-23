@@ -9,12 +9,6 @@ import (
 	"strings"
 )
 
-// Values array for the feedback.json file
-
-// Model array for the feedback.json file
-
-type rating float32
-
 type vehicle interface {
 }
 
@@ -54,7 +48,10 @@ type feedbackResult struct {
 }
 
 var vehicleResult map[string]feedbackResult
+
 var inventory []vehicle
+
+type rating float32
 
 const (
 	extraPositive rating = 1.2
@@ -80,6 +77,7 @@ func init() {
 		truck{"RAM1500", "Dodge", "Truck"}}
 
 	vehicleResult = make(map[string]feedbackResult)
+
 }
 
 func main() {
@@ -100,10 +98,11 @@ func main() {
 			fmt.Printf("Are you sure this Vehicle Type exists")
 		}
 	}
+
 }
 
-
 func readJSONFile() Values {
+
 	jsonFile, err := os.Open("feedback.json")
 
 	if err != nil {
@@ -120,18 +119,19 @@ func readJSONFile() Values {
 }
 
 func generateRating() {
-	
+
 	f := readJSONFile()
 
-	for _,v:= range f.Models {
+	for _, v := range f.Models {
 		var vehResult feedbackResult
 		var vehRating rating
 		for _, msg := range v.Feedback {
-			if text := strings.Split(msg," "); len(text) >= 5 {
+
+			if text := strings.Split(msg, " "); len(text) >= 5 {
 				vehRating = 5.0
 				vehResult.feedbackTotal++
-				for _,word := range text {
-					switch s:=strings.Trim(strings.ToLower(word), " ,.,!,?,\t,\n,\r"); s {
+				for _, word := range text {
+					switch s := strings.Trim(strings.ToLower(word), " ,.,!,?,\t,\n,\r"); s {
 					case "pleasure", "impressed", "wonderful", "fantastic", "splendid":
 						vehRating += extraPositive
 					case "help", "helpful", "thanks", "thank you", "happy":
@@ -139,8 +139,9 @@ func generateRating() {
 					case "not helpful", "sad", "angry", "improve", "annoy":
 						vehRating += negative
 					case "pathetic", "bad", "worse", "unfortunately", "agitated", "frustrated":
-						vehRating += extraNegative	
+						vehRating += extraNegative
 					}
+
 				}
 				switch {
 				case vehRating > 8.0:
@@ -164,10 +165,11 @@ func showRating(model string) {
 			fmt.Printf("Total Ratings:%v\tPositive:%v\tNegative:%v\tNeutral:%v", r.feedbackTotal, r.feedbackPositive, r.feedbackNegative, r.feedbackNeutral)
 			ratingFound = true
 		}
-		if !ratingFound {
-			fmt.Printf("No rating for this vehicle")
-		}
 	}
+	if !ratingFound {
+		fmt.Printf("No rating for this vehicle")
+	}
+
 }
 
 func (c *car) carDetails() {
